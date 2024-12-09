@@ -14,10 +14,15 @@ import org.springframework.stereotype.Service;
 public class RAGServiceDefault implements RAGService {
 
     private final EmbeddingStore<TextSegment> embeddingStore;
+    private final EmbeddingStoreIngestor ingestor;
 
-    private RAGServiceDefault(StudentsData studentsData){
+    private RAGServiceDefault(StudentsData studentsData, JSONDocumentSplitter splitter){
         embeddingStore = new InMemoryEmbeddingStore<>();
-        EmbeddingStoreIngestor.ingest(studentsData.getStudentsData(), embeddingStore);
+        ingestor = EmbeddingStoreIngestor.builder()
+                .embeddingStore(embeddingStore)
+                .documentSplitter(splitter)
+                .build();
+        ingestor.ingest(studentsData.getStudentsData());
     }
 
     @Override
